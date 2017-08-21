@@ -1,34 +1,33 @@
 import { Component, Input } from '@angular/core';
-var scss = require('./filestack.scss');
+var scss = require('./imageUpload.scss');
 
 declare var filepicker: any;
 
 @Component({
-    selector: 'filestack-button',
+    selector: 'image-upload',
     styles: [`${scss}`],
-    template: require('./filestack.component.html')
+    template: require('./imageUpload.component.html')
 })
 
-export class FilestackComponent {
-    @Input() image: any;
+export class ImageUploadComponent {
+    @Input() content: any;
+    @Input() dimension: string;
 
     constructor() {
-        filepicker.setKey(process.env.APIKEY);
+        filepicker.setKey(process.ENV.APIKEY);
     }
 
     selectImage() {
         filepicker.pick(
             {
+                cropRatio: this.dimension,
+                cropForce: true,
                 mimetype: 'image/*',
                 container: 'window',
-                services: ['COMPUTER', 'FACEBOOK', 'INSTAGRAM', 'GOOGLE_DRIVE', 'DROPBOX']
+                services: ['CONVERT', 'COMPUTER', 'FACEBOOK', 'INSTAGRAM', 'GOOGLE_DRIVE', 'DROPBOX'],
+                conversions: ['crop']
             },
-            function (Blob: any) {
-                this.image = Blob;
-            }.bind(this),
-            function (FPError: any) {
-                console.log(FPError.toString());
-            }.bind(this));
+            (blob: any) => this.image = blob.url,
+            (error: any) => console.log(error.toString()));
     }
-
 }
